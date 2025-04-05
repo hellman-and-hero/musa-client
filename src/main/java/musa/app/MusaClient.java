@@ -10,6 +10,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -57,18 +58,22 @@ public class MusaClient extends JPanel {
 
 			@Override
 			public boolean getDirectionForRing(int ring) {
-				return ring == 0 ? false : true;
+				return ring != 0;
 			}
 
 			@Override
 			public String getMqttHost() {
-				return "localhost";
+				return getEnv("MQTT_HOST").orElse("localhost");
 			}
 
 			@Override
-			public int getMqttHPortost() {
-				return 1833;
-			}};
+			public int getMqttPort() {
+				return getEnv("MQTT_PORT").map(Integer::parseInt).orElse(1883);
+			}
+			private Optional<String> getEnv(String env) {
+				return Optional.ofNullable(System.getenv(env));
+			}
+		};
 	}
 
 	private String label() {
